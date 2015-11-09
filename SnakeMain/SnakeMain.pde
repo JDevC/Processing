@@ -67,24 +67,31 @@ void draw(){
       if(k.equals("w") || k.equals("a") || k.equals("s") || k.equals("d")){
         // Impide que la cabeza de serpiente se superponga al resto de su cuerpo
         if(k.equals("w") && !head.getDir().equals("s")){
+          // Asigna la dirección a la cabeza de serpiente
           head.setDir(k);
+          /* Agrega la misma dirección a las secciones existentes, añadiendo además
+           * el punto en el que ha cambiado el rumbo */
           for(int i = 0; i < bodies.size(); i++){
-            bodies.get(i).setDir(k);
+            bodies.get(i).setNextDir(k);
+            bodies.get(i).setNextPoint(head.getX(),head.getY());
           }
         }else if(k.equals("s") && !head.getDir().equals("w")){
           head.setDir(k);
           for(int i = 0; i < bodies.size(); i++){
-            bodies.get(i).setDir(k);
+            bodies.get(i).setNextDir(k);
+            bodies.get(i).setNextPoint(head.getX(),head.getY());
           }
         }else if(k.equals("a") && !head.getDir().equals("d")){
           head.setDir(k);
           for(int i = 0; i < bodies.size(); i++){
-            bodies.get(i).setDir(k);
+            bodies.get(i).setNextDir(k);
+            bodies.get(i).setNextPoint(head.getX(),head.getY());
           }
         }else if(k.equals("d") && !head.getDir().equals("a")){
           head.setDir(k);
           for(int i = 0; i < bodies.size(); i++){
-            bodies.get(i).setDir(k);
+            bodies.get(i).setNextDir(k);
+            bodies.get(i).setNextPoint(head.getX(),head.getY());
           }
         }
       }else if(k.equals("e")){
@@ -106,8 +113,22 @@ void draw(){
         if(head.getY() < -head.getSize()/2){
           head.setY(dimm + head.getSize()/2);
         }
+        // Realiza el movimiento de las secciones del cuerpo
         for(int i = 0; i < bodies.size(); i++){
-          bodies.get(i).setY(bodies.get(i).getY()-bodies.get(i).getVel());
+          // Comprueba si la actual ha llegado al punto en el que ha girado la cabeza
+          /*ArrayList<Float> nextPoint = bodies.get(i).getNextPoint();
+          if(bodies.get(i).getX() == nextPoint.get(0) && bodies.get(i).getY() == nextPoint.get(1)){
+            bodies.get(i).setY(bodies.get(i).getY()-bodies.get(i).getVel());
+            // Realiza el efecto de looping en el extremo superior de la pantalla
+            if(bodies.get(i).getY() < -bodies.get(i).getSize()/2){
+              bodies.get(i).setY(dimm + bodies.get(i).getSize()/2);
+            }
+          }else{
+            
+          } */
+          //bodies.get(i).setY(bodies.get(i).getY()-bodies.get(i).getVel());
+          bodies.get(i).update();
+          // Realiza el efecto de looping en el extremo superior de la pantalla
           if(bodies.get(i).getY() < -bodies.get(i).getSize()/2){
             bodies.get(i).setY(dimm + bodies.get(i).getSize()/2);
           }
@@ -119,7 +140,8 @@ void draw(){
           head.setX(500 + head.getSize()/2);
         }
         for(int i = 0; i < bodies.size(); i++){
-          bodies.get(i).setX(bodies.get(i).getX()-bodies.get(i).getVel());
+          //bodies.get(i).setX(bodies.get(i).getX()-bodies.get(i).getVel());
+          bodies.get(i).update();
           if(bodies.get(i).getX() < -bodies.get(i).getSize()/2){
             bodies.get(i).setX(dimm + bodies.get(i).getSize()/2);
           }
@@ -131,7 +153,8 @@ void draw(){
           head.setY(-head.getSize()/2);
         }
         for(int i = 0; i < bodies.size(); i++){
-          bodies.get(i).setY(bodies.get(i).getY()+bodies.get(i).getVel());
+          //bodies.get(i).setY(bodies.get(i).getY()+bodies.get(i).getVel());
+          bodies.get(i).update();
           if(bodies.get(i).getY() > dimm+bodies.get(i).getSize()/2){
             bodies.get(i).setY(-bodies.get(i).getSize()/2);
           }
@@ -143,7 +166,8 @@ void draw(){
           head.setX(-head.getSize()/2);
         }
         for(int i = 0; i < bodies.size(); i++){
-          bodies.get(i).setX(bodies.get(i).getX()+bodies.get(i).getVel());
+          //bodies.get(i).setX(bodies.get(i).getX()+bodies.get(i).getVel());
+          bodies.get(i).update();
           if(bodies.get(i).getX() > dimm+bodies.get(i).getSize()/2){
             bodies.get(i).setX(-bodies.get(i).getSize()/2);
           }
@@ -195,7 +219,6 @@ void draw(){
     text("Load Game", titlesX, loadGameY);
     text("Credits", titlesX, creditsY);
     text("Exit", titlesX, exitY);
-    //triangle(titlesX,190,120,210,120,170);
   }
 }
 // FUNCIONES -----------------------------------------------------------------------------------------------------------------
@@ -210,12 +233,51 @@ void field(){
 
 // Esta función detalla las instrucciones a ejecutar en caso de colisión cabeza-pelota
 boolean eat(){
-  bodies.add(new SnakeBodies(
+  SnakeBodies b = new SnakeBodies();
+  switch(bodies.get(bodies.size()-1).getDir()){
+    case "w":
+      b = new SnakeBodies(
+        bodies.get(bodies.size()-1).getX(),
+        bodies.get(bodies.size()-1).getY()+10,
+        bodies.get(bodies.size()-1).getVel(),
+        20,
+        bodies.get(bodies.size()-1).getDir());
+    break;
+    case "a":
+      b = new SnakeBodies(
+        bodies.get(bodies.size()-1).getX()+10,
+        bodies.get(bodies.size()-1).getY(),
+        bodies.get(bodies.size()-1).getVel(),
+        20,
+        bodies.get(bodies.size()-1).getDir());
+    break;
+    case "s":
+      b = new SnakeBodies(
+        bodies.get(bodies.size()-1).getX(),
+        bodies.get(bodies.size()-1).getY()-10,
+        bodies.get(bodies.size()-1).getVel(),
+        20,
+        bodies.get(bodies.size()-1).getDir());
+    break;
+    case "d":
+      b = new SnakeBodies(
+        bodies.get(bodies.size()-1).getX()-10,
+        bodies.get(bodies.size()-1).getY(),
+        bodies.get(bodies.size()-1).getVel(),
+        20,
+        bodies.get(bodies.size()-1).getDir());
+    break;
+  }
+  b.setDirs(bodies.get(bodies.size()-1).getDirs());
+  b.setArrayX(bodies.get(bodies.size()-1).getArrayX());
+  b.setArrayY(bodies.get(bodies.size()-1).getArrayY());
+  bodies.add(b);
+  /*bodies.add(new SnakeBodies(
     bodies.get(bodies.size()-1).getX()-10,
     bodies.get(bodies.size()-1).getY(),
     bodies.get(bodies.size()-1).getVel(),
     20,
-    bodies.get(bodies.size()-1).getDir()));
+    bodies.get(bodies.size()-1).getDir()));*/
   // Se pinta el espacio de la pelota en "blanco", dando la impresión de que ha desaparecido
   stroke(0,250,0);
   fill(0,250,0);
@@ -229,7 +291,8 @@ boolean eat(){
     ball.addPoint();
     head.setVel(head.getVel()+1);
     for(int i = 0; i < bodies.size(); i++){
-      bodies.get(i).setVel(bodies.get(i).getVel()+1);
+      //bodies.get(i).setVel(bodies.get(i).getVel()+1);
+      bodies.get(i).setVel(head.getVel());
     }
   }
   return true;
@@ -264,37 +327,39 @@ void marks(int puntos){
 // Se lanza al pulsar una tecla del teclado
 void keyPressed(){
   // Detecta tecla de subida en la pantalla de menú
-  if(key == 'w' && initGame == false){
-    // Comprueba que no sea la primera opción de todas
-    if(posCursor[0] != true){
-      // Busca la posición del cursor
-      for(int i = 1; i < posCursor.length; i++){
-        // Si la encuentra, la pone a false, y pone a true la opción superior  
-        if(posCursor[i] == true){
-          posCursor[i] = false;
-          posCursor[i-1] = true;
-          break;
+  if(!initGame){
+    if(key == 'w'){
+      // Comprueba que no sea la primera opción de todas
+      if(posCursor[0] != true){
+        // Busca la posición del cursor
+        for(int i = 1; i < posCursor.length; i++){
+          // Si la encuentra, la pone a false, y pone a true la opción superior  
+          if(posCursor[i] == true){
+            posCursor[i] = false;
+            posCursor[i-1] = true;
+            break;
+          }
         }
       }
-    }
-  }else if(key == 's' && initGame == false){
-    // Comprueba que no sea la primera opción de todas
-    if(posCursor[posCursor.length-1] != true){
-      // Busca la posición del cursor
-      for(int i = 0; i < posCursor.length-1; i++){
-        // Si la encuentra, la pone a false, y pone a true la opción superior  
-        if(posCursor[i] == true){
-          posCursor[i] = false;
-          posCursor[i+1] = true;
-          break;
+    }else if(key == 's'){
+      // Comprueba que no sea la primera opción de todas
+      if(posCursor[posCursor.length-1] != true){
+        // Busca la posición del cursor
+        for(int i = 0; i < posCursor.length-1; i++){
+          // Si la encuentra, la pone a false, y pone a true la opción superior  
+          if(posCursor[i] == true){
+            posCursor[i] = false;
+            posCursor[i+1] = true;
+            break;
+          }
         }
       }
-    }
-  }else if(key == ENTER && initGame == false){
-    if(posCursor[0] == true){
-      initGame = true;
-    }else if(posCursor[3] == true){
-      System.exit(0);
+    }else if(key == ENTER){
+      if(posCursor[0] == true){
+        initGame = true;
+      }else if(posCursor[3] == true){
+        System.exit(0);
+      }
     }
   }
 }

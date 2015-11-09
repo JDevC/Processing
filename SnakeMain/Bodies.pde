@@ -1,8 +1,8 @@
 public class Bodies{
   // ATRIBUTOS
-  protected float posX;
-  protected float posY;
-  protected int size;
+  protected float posX;    // Coordenada X actual
+  protected float posY;    // Coordenada Y actual
+  protected int size;      // Tamaño del elemento
   // CONSTRUCTOR
   public Bodies(){
     
