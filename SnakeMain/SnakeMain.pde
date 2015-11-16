@@ -1,27 +1,27 @@
 // PANTALLA MENÚ
 TitleScreen tScreen;
-PImage z;            // Contenedor de imagen de fondo
-int titlesX = 150;   // Posición X de los rótulos
+PImage z;                              // Contenedor de imagen de fondo
+int titlesX = 150;                     // Posición X de los rótulos
 int newGameY = 200;
 int loadGameY = 230;
 int creditsY = 260;
 int exitY = 290;
 boolean[] posCursor = new boolean[4];
 // Dimensiones de la pantalla
-final int dimm = 500;
+final int dimm = 500;                  // 500
 // Objetos serpiente
-SnakeHead head;
-SnakeBodies body;
-ArrayList<SnakeBodies> bodies;
+SnakeHead head;                        // Cabeza de la serpiente
+SnakeBodies b;                         // Segmento de la serpiente
+ArrayList<SnakeBodies> bodies;         // Array de segmentos del cuerpo
 // Parámetros de la pelota (alimento)
 Ball ball;
-boolean eaten = false;  // True = no hay (generar nueva pelota); false = hay pelota en el campo
+boolean eaten = false;                 // True = no hay (generar nueva pelota); false = hay pelota en el campo
 // Puntos
-int score = 0; // Define los puntos conseguidos por el jugador, 1 punto por cada bolita consumida
+int score = 0;                         // Define los puntos conseguidos por el jugador, 1 punto por cada bolita consumida
 // Extras
-boolean initGame = false;  // Variable para iniciar la partida
-boolean toggle = false;    // Activa/Desactiva estadísticas de debug
-String k = "";             // Variable de almacenamiento de teclas pulsadas
+boolean initGame = false;              // Variable para iniciar la partida
+boolean toggle = false;                // Activa/Desactiva estadísticas de debug
+String k = "";                         // Variable de almacenamiento de teclas pulsadas
 
 void settings() {
   //fullScreen();
@@ -52,7 +52,7 @@ void setup(){
     pos -= 10;
   }
   // Situamos una pelota en una zona aleatoria del tablero
-  ball = new Ball(random(5,496),random(5,496),10);
+  ball = new Ball(random(dimm-(dimm-5),dimm-4),random(dimm-(dimm-5),dimm-4),10);
 }
 
 void draw(){
@@ -66,7 +66,7 @@ void draw(){
       // Comprueba que sólo se haya pulsado una de las teclas aceptadas para el juego
       if(k.equals("w") || k.equals("a") || k.equals("s") || k.equals("d")){
         // Impide que la cabeza de serpiente se superponga al resto de su cuerpo
-        if(k.equals("w") && !head.getDir().equals("s")){
+        if(k.equals("w") && !head.getDir().equals("w") && !head.getDir().equals("s")){
           // Asigna la dirección a la cabeza de serpiente
           head.setDir(k);
           /* Agrega la misma dirección a las secciones existentes, añadiendo además
@@ -75,19 +75,19 @@ void draw(){
             bodies.get(i).setNextDir(k);
             bodies.get(i).setNextPoint(head.getX(),head.getY());
           }
-        }else if(k.equals("s") && !head.getDir().equals("w")){
+        }else if(k.equals("s") && !head.getDir().equals("s") && !head.getDir().equals("w")){
           head.setDir(k);
           for(int i = 0; i < bodies.size(); i++){
             bodies.get(i).setNextDir(k);
             bodies.get(i).setNextPoint(head.getX(),head.getY());
           }
-        }else if(k.equals("a") && !head.getDir().equals("d")){
+        }else if(k.equals("a") && !head.getDir().equals("a") && !head.getDir().equals("d")){
           head.setDir(k);
           for(int i = 0; i < bodies.size(); i++){
             bodies.get(i).setNextDir(k);
             bodies.get(i).setNextPoint(head.getX(),head.getY());
           }
-        }else if(k.equals("d") && !head.getDir().equals("a")){
+        }else if(k.equals("d") && !head.getDir().equals("d") && !head.getDir().equals("a")){
           head.setDir(k);
           for(int i = 0; i < bodies.size(); i++){
             bodies.get(i).setNextDir(k);
@@ -115,18 +115,7 @@ void draw(){
         }
         // Realiza el movimiento de las secciones del cuerpo
         for(int i = 0; i < bodies.size(); i++){
-          // Comprueba si la actual ha llegado al punto en el que ha girado la cabeza
-          /*ArrayList<Float> nextPoint = bodies.get(i).getNextPoint();
-          if(bodies.get(i).getX() == nextPoint.get(0) && bodies.get(i).getY() == nextPoint.get(1)){
-            bodies.get(i).setY(bodies.get(i).getY()-bodies.get(i).getVel());
-            // Realiza el efecto de looping en el extremo superior de la pantalla
-            if(bodies.get(i).getY() < -bodies.get(i).getSize()/2){
-              bodies.get(i).setY(dimm + bodies.get(i).getSize()/2);
-            }
-          }else{
-            
-          } */
-          //bodies.get(i).setY(bodies.get(i).getY()-bodies.get(i).getVel());
+          // Actualiza la situación del segmento actual
           bodies.get(i).update();
           // Realiza el efecto de looping en el extremo superior de la pantalla
           if(bodies.get(i).getY() < -bodies.get(i).getSize()/2){
@@ -137,10 +126,9 @@ void draw(){
       case "a":
         head.setX(head.getX()-head.getVel());
         if(head.getX() < -head.getSize()/2){
-          head.setX(500 + head.getSize()/2);
+          head.setX(dimm + head.getSize()/2);
         }
         for(int i = 0; i < bodies.size(); i++){
-          //bodies.get(i).setX(bodies.get(i).getX()-bodies.get(i).getVel());
           bodies.get(i).update();
           if(bodies.get(i).getX() < -bodies.get(i).getSize()/2){
             bodies.get(i).setX(dimm + bodies.get(i).getSize()/2);
@@ -153,7 +141,6 @@ void draw(){
           head.setY(-head.getSize()/2);
         }
         for(int i = 0; i < bodies.size(); i++){
-          //bodies.get(i).setY(bodies.get(i).getY()+bodies.get(i).getVel());
           bodies.get(i).update();
           if(bodies.get(i).getY() > dimm+bodies.get(i).getSize()/2){
             bodies.get(i).setY(-bodies.get(i).getSize()/2);
@@ -166,7 +153,6 @@ void draw(){
           head.setX(-head.getSize()/2);
         }
         for(int i = 0; i < bodies.size(); i++){
-          //bodies.get(i).setX(bodies.get(i).getX()+bodies.get(i).getVel());
           bodies.get(i).update();
           if(bodies.get(i).getX() > dimm+bodies.get(i).getSize()/2){
             bodies.get(i).setX(-bodies.get(i).getSize()/2);
@@ -204,7 +190,7 @@ void draw(){
   }else{
     // Pintamos el fondo
     fill(255,255,255);
-    rect(0,0,500,500);
+    rect(0,0,dimm,dimm);
     fill(0,0,0);
     // Situamos la imagen de fondo de pantalla
     imageMode(CENTER);
@@ -221,7 +207,7 @@ void draw(){
     text("Exit", titlesX, exitY);
   }
 }
-// FUNCIONES -----------------------------------------------------------------------------------------------------------------
+// FUNCIONES /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Esta función "limpia" la ventana (usado para los movimientos)
 void field(){
   fill(0,250,0);
@@ -233,51 +219,37 @@ void field(){
 
 // Esta función detalla las instrucciones a ejecutar en caso de colisión cabeza-pelota
 boolean eat(){
-  SnakeBodies b = new SnakeBodies();
-  switch(bodies.get(bodies.size()-1).getDir()){
+  b = new SnakeBodies();
+  b.setDir(bodies.get(bodies.size()-1).getDir());
+  b.setVel(bodies.get(bodies.size()-1).getVel());
+  b.setSize(bodies.get(bodies.size()-1).getSize());
+  //switch(bodies.get(bodies.size()-1).getDir()){
+  switch(b.getDir()){
     case "w":
-      b = new SnakeBodies(
-        bodies.get(bodies.size()-1).getX(),
-        bodies.get(bodies.size()-1).getY()+10,
-        bodies.get(bodies.size()-1).getVel(),
-        20,
-        bodies.get(bodies.size()-1).getDir());
+      b.setX(bodies.get(bodies.size()-1).getX());
+      b.setY(bodies.get(bodies.size()-1).getY()+10);
     break;
     case "a":
-      b = new SnakeBodies(
-        bodies.get(bodies.size()-1).getX()+10,
-        bodies.get(bodies.size()-1).getY(),
-        bodies.get(bodies.size()-1).getVel(),
-        20,
-        bodies.get(bodies.size()-1).getDir());
+      b.setX(bodies.get(bodies.size()-1).getX()+10);
+      b.setY(bodies.get(bodies.size()-1).getY());
     break;
     case "s":
-      b = new SnakeBodies(
-        bodies.get(bodies.size()-1).getX(),
-        bodies.get(bodies.size()-1).getY()-10,
-        bodies.get(bodies.size()-1).getVel(),
-        20,
-        bodies.get(bodies.size()-1).getDir());
+      b.setX(bodies.get(bodies.size()-1).getX());
+      b.setY(bodies.get(bodies.size()-1).getY()-10);
     break;
     case "d":
-      b = new SnakeBodies(
-        bodies.get(bodies.size()-1).getX()-10,
-        bodies.get(bodies.size()-1).getY(),
-        bodies.get(bodies.size()-1).getVel(),
-        20,
-        bodies.get(bodies.size()-1).getDir());
+      b.setX(bodies.get(bodies.size()-1).getX()-10);
+      b.setY(bodies.get(bodies.size()-1).getY());
     break;
   }
-  b.setDirs(bodies.get(bodies.size()-1).getDirs());
-  b.setArrayX(bodies.get(bodies.size()-1).getArrayX());
-  b.setArrayY(bodies.get(bodies.size()-1).getArrayY());
+  //b.setDirs(bodies.get(bodies.size()-1).getDirs());
+  b.setNextDir(bodies.get(bodies.size()-1).getNextDir());
+  ArrayList<Float> next = bodies.get(bodies.size()-1).getNextPoint();
+  if(!next.isEmpty() && next.size() != 0){
+    b.setNextPoint(next.get(0),next.get(1));
+  }
+  //b.setArrayY(bodies.get(bodies.size()-1).getArrayY());
   bodies.add(b);
-  /*bodies.add(new SnakeBodies(
-    bodies.get(bodies.size()-1).getX()-10,
-    bodies.get(bodies.size()-1).getY(),
-    bodies.get(bodies.size()-1).getVel(),
-    20,
-    bodies.get(bodies.size()-1).getDir()));*/
   // Se pinta el espacio de la pelota en "blanco", dando la impresión de que ha desaparecido
   stroke(0,250,0);
   fill(0,250,0);
@@ -386,6 +358,7 @@ void arrow(){
   }
   fill(0,0,0);
 }
+// DEBUG -----------------------------------------------------------------------------------------------------------------
 // Función para debug
 void debug(){
   fill(0,0,0);
@@ -394,5 +367,7 @@ void debug(){
   text("Coord Y:"+head.getY(), 10, 420);
   text("Velocity:"+head.getVel(), 10, 440);
   text("Bodies:"+bodies.size(), 10, 460);
+  text("TailDir:"+bodies.get(bodies.size()-1).getDir(),10,480);
+  text("TailPrevDir:"+bodies.get(bodies.size()-1).getDirs(),10,500);
   fill(255,255,255);
 }

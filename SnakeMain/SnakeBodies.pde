@@ -8,6 +8,9 @@ public class SnakeBodies extends Bodies{
   // CONSTRUCTOR
   public SnakeBodies(){
     super();
+    this.directions = new ArrayList<String>();
+    this.posNextX = new ArrayList<Float>();
+    this.posNextY = new ArrayList<Float>();
   }
   public SnakeBodies(float posX, float posY, int vel, int size, String dir){
     super();
@@ -31,6 +34,13 @@ public class SnakeBodies extends Bodies{
   public ArrayList<String> getDirs(){
     return directions;
   }
+  public String getNextDir(){
+    if(!directions.isEmpty()){
+      return directions.get(directions.size()-1);
+    }else{
+      return "";
+    }
+  }
   public ArrayList<Float> getArrayX(){
     return posNextX;
   }
@@ -40,8 +50,10 @@ public class SnakeBodies extends Bodies{
   // Obtiene el siguiente punto de giro
   public ArrayList<Float> getNextPoint(){
     ArrayList nextPoint = new ArrayList<Float>();
-    nextPoint.add(posNextX.get(0));
-    nextPoint.add(posNextY.get(0));
+    if(!posNextX.isEmpty()){
+      nextPoint.add(posNextX.get(0));
+      nextPoint.add(posNextY.get(0));
+    }
     return nextPoint;
   }
   public void setVel(int vel){
@@ -80,13 +92,15 @@ public class SnakeBodies extends Bodies{
   // Función de actualización de la sección de cuerpo
   public void update(){
     // Comprueba si ha llegado al siguiente punto de giro
-    if(!this.posNextX.isEmpty()){
+    if(!this.posNextX.isEmpty() && !this.directions.get(0).equals("")){
       if(this.posX == this.posNextX.get(0) && this.posY == this.posNextY.get(0)){
         // Sustituye la dirección actual con la siguiente almacenada, y la retira del array
         this.dir = this.directions.get(0);
         this.removePoint();
         // 
       }
+    }else if(!this.directions.isEmpty() && this.directions.get(0).equals("")){
+      this.directions.remove(0);
     }
     switch(this.dir){
       case "w":
